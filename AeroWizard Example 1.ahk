@@ -1,12 +1,9 @@
-﻿
-
-#NoEnv
+﻿#NoEnv
 #NoTrayIcon
 #Include <Class_VisualStyle>
 
 SendMode Input
 SetBatchLines -1
-
 
 Wizard := new VisualStyle()
 WizProp := Wizard.WinCreate("AutoHotkey Setup", "Back", "Next", "ButtonCancel", icon, "", "", 600, 400)
