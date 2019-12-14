@@ -20,6 +20,7 @@
 ;
 ; ==================================================================================================================================================;
 
+	Global AVS_COMMNDEXT := 40
 	Global DWM_WINEXTENT := 33  ;needed
 	Global S_OK := 0  ;needed
 	Global SS_NOTIFY := 0x100
@@ -89,12 +90,22 @@
 	Global WM_DWMCOMPOSITIONCHANGED := 0x031E  ;needed
 	Global WM_ACTIVATE := 0x06  ;needed
 
-   ;  ---- Tv Control Messages ---- ;
+   ;  ---- Tv Control Messages & Extended Styles ---- ;
 	Global TV_FIRST := 0x1100  ;needed
 	Global TVM_SETEXTENDEDSTYLE := (TV_FIRST + 44)  ;needed
 	Global TVM_SETTEXTCOLOR := (TV_FIRST + 30)  ;needed
 	Global TVM_SETBKCOLOR := (TV_FIRST + 29)  ;needed
 	Global TVM_SETINDENT := (TV_FIRST + 7)  ;needed
+	Global TVS_EX_MULTISELECT := 0x0002
+	Global TVS_EX_DOUBLEBUFFER := 0x0004
+	Global TVS_EX_NOINDENTSTATE := 0x0008
+	Global TVS_EX_RICHTOOLTIP := 0x0010
+	Global TVS_EX_AUTOHSCROLL := 0x0020
+	Global TVS_EX_FADEINOUTEXPANDOS := 0x0040
+	Global TVS_EX_PARTIALCHECKBOXES := 0x0080
+	Global TVS_EX_EXCLUSIONCHECKBOXES := 0x0100
+	Global TVS_EX_DIMMEDCHECKBOXES := 0x0200
+	Global TVS_EX_DRAWIMAGEASYNC := 0x0400
    
    ;  ---- Track Mouse Even Function/structure ---- ; 
 	Global TME_HOVER := 0x00000001  ;needed

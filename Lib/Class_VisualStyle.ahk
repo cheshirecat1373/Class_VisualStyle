@@ -3,14 +3,15 @@
 ;
 ;	UX_THEME / VISUAL STYLE / AEROWIZARD
 ;
-;	Author:		MIAMIGUY | CHESHIRECAT
-;	Developed:	04/27/2008 - 11/13/2019
+;	Author:			MIAMIGUY | CHESHIRECAT
+;	Developed:		04/27/2008 - 11/13/2019
 ;	Function:		Create AeroWizard with AHK | Perform other Visual Style modifications to GUI and/or Controls
-;	Tested with:	AHK 1.1.20.00+ (A32/U32)
-;	Tested On:	Win Vista | Win 7 | Win 10
-;	Org. Forum:	https://autohotkey.com/board/topic/28522-help-with-extending-client-area-in-vista-gui/
+;	Tested with:		AHK 1.1.20.00+ (A32/U32)
+;	Tested On:		Win Vista | Win 7 | Win 10
+;	Org. Forum:		https://autohotkey.com/board/topic/28522-help-with-extending-client-area-in-vista-gui/
 ;
 ;	Changes:
+;		0.1.00.01/2019-12-12 - minor modifications and corrections
 ;		0.1.00.00/2019-11-13 - initial release 
 ; **************************************************************************************************************************************************;
 ;
@@ -19,7 +20,6 @@
 ;	IN NO EVENT WILL THE AUTHOR BE HELD LIABLE FOR ANY DAMAGES ARISING FROM THE USE OR MISUSE OF THIS SOFTWARE.
 ;
 ; ==================================================================================================================================================;
-
 #Include <Const_Theme>
 
 Class VisualStyle {
@@ -37,13 +37,13 @@ Class VisualStyle {
 		VisualStyle.DerivedObjectsCount += 1
 		
 		if (VisualStyle.DerivedObjectsCount = 1) {
-			OnMessage(WM_LBUTTONDOWN, this.WM_LBUTTONDOWN 				:= ObjBindMethod(VisualStyle, "WM_LBUTTONDOWN"))
-			OnMessage(WM_PAINT, this.WM_PAINT 							:= ObjBindMethod(VisualStyle, "WM_PAINT"))
-			OnMessage(WM_CTLCOLORBTN, this.WM_CTLCOLORBTN 				:= ObjBindMethod(VisualStyle, "WM_CTLCOLORBTN"))
-			OnMessage(WM_DWMCOMPOSITIONCHANGED, this.WM_DWMCOMPOSITIONCHANGED:= ObjBindMethod(VisualStyle, "WM_DWMCOMPOSITIONCHANGED"))
-			OnMessage(WM_SETCURSOR, this.WM_SETCURSOR 					:= ObjBindMethod(VisualStyle, "WM_SETCURSOR"))
-			OnMessage(WM_NCACTIVATE, this.WM_NCACTIVATE 				:= ObjBindMethod(VisualStyle, "WM_NCACTIVATE"))
-			OnMessage(WM_CTLCOLORDLG, this.WM_CTLCOLORDLG 				:= ObjBindMethod(VisualStyle, "WM_CTLCOLORDLG"))
+			OnMessage(WM_LBUTTONDOWN, this.WM_LBUTTONDOWN := ObjBindMethod(VisualStyle, "WM_LBUTTONDOWN"))
+			OnMessage(WM_PAINT, this.WM_PAINT := ObjBindMethod(VisualStyle, "WM_PAINT"))
+			OnMessage(WM_CTLCOLORBTN, this.WM_CTLCOLORBTN := ObjBindMethod(VisualStyle, "WM_CTLCOLORBTN"))
+			OnMessage(WM_DWMCOMPOSITIONCHANGED, this.WM_DWMCOMPOSITIONCHANGED := ObjBindMethod(VisualStyle, "WM_DWMCOMPOSITIONCHANGED"))
+			OnMessage(WM_SETCURSOR, this.WM_SETCURSOR := ObjBindMethod(VisualStyle, "WM_SETCURSOR"))
+			OnMessage(WM_NCACTIVATE, this.WM_NCACTIVATE := ObjBindMethod(VisualStyle, "WM_NCACTIVATE"))
+			OnMessage(WM_CTLCOLORDLG, this.WM_CTLCOLORDLG := ObjBindMethod(VisualStyle, "WM_CTLCOLORDLG"))
 		}
 	}
 
@@ -52,28 +52,29 @@ Class VisualStyle {
 		VisualStyle.DerivedObjects.Delete(this.wProperty.hwnd)
 		VisualStyle.DerivedObjectsCount -= 1
 
-		Gui, % this.wProperty.hwnd ": Destroy"
+		if (WinExist("ahk_id" this.wProperty.hwnd))
+			Gui, % this.wProperty.hwnd ": Destroy"
 
 		this.wProperty := ""
 
 		if (VisualStyle.DerivedObjectsCount = 0)
 		{
-			OnMessage(WM_LBUTTONDOWN, 		this.WM_LBUTTONDOWN, 0)
-			OnMessage(WM_PAINT,				this.WM_PAINT, 0)
-			OnMessage(WM_CTLCOLORBTN,		this.WM_CTLCOLORBTN, 0)
-			OnMessage(WM_DWMCOMPOSITIONCHANGED,this.WM_DWMCOMPOSITIONCHANGED, 0)
-			OnMessage(WM_SETCURSOR, 		this.WM_SETCURSOR, 0)
-			OnMessage(WM_NCACTIVATE, 		this.WM_NCACTIVATE, 0)
-			OnMessage(WM_CTLCOLORDLG, 		this.WM_CTLCOLORDLG, 0)
+			OnMessage(WM_LBUTTONDOWN, this.WM_LBUTTONDOWN, 0)
+			OnMessage(WM_PAINT, this.WM_PAINT, 0)
+			OnMessage(WM_CTLCOLORBTN, this.WM_CTLCOLORBTN, 0)
+			OnMessage(WM_DWMCOMPOSITIONCHANGED, this.WM_DWMCOMPOSITIONCHANGED, 0)
+			OnMessage(WM_SETCURSOR, this.WM_SETCURSOR, 0)
+			OnMessage(WM_NCACTIVATE, this.WM_NCACTIVATE, 0)
+			OnMessage(WM_CTLCOLORDLG, this.WM_CTLCOLORDLG, 0)
 		}
 	}
 	
-	WinCreate(wCaption, BkBtnLabel, NxtBtnLabel, CancelBtnLabel, wIcon:="", X:="", Y:="", W:="", H:="", Style:= "Wiz") {
+	WinCreate(wCaption, bbLabel, nbLabel, cbLabel, wIcon:="", X:="", Y:="", W:="", H:="", Style:= "Wiz") {
 
-		W := (W!=""?W:570), H := (H!=""?H:408), X := (X!=""?X:"Center"), Y := (Y!=""?Y:"Center"), btnX := (W-(68*2)-17), btnY := (H-(25+8))
+		W := (W!=""?W:570), H := (H!=""?H:408), X := (X!=""?X:"Center"), Y := (Y!=""?Y:"Center"), btnX := (W-(68*2)-17), btnY := ((H-(AVS_COMMNDEXT/2))-11)
 		
-		Gui, New, +HwndhWnd +Owner -MinimizeBox +Caption +0x40000 +MaxSize +MinSize, % wCaption
-		
+		Gui, New, % "+HwndhWnd +Owner -MinimizeBox +Caption " (UxTheme_IsCompositionActive() ? "" : +0x40000 +MaxSize +MinSize), % wCaption
+
 		this.wProperty := {hwnd: hwnd}
 
 		Font := this.GetFontProperties("AEROWIZARD", AW_CONTENTAREA)
@@ -82,21 +83,32 @@ Class VisualStyle {
 
 		if (Style = "Wiz")
 		{
-			Gui, % hwnd ": Add" , Button, % " x0 y0 w30 h30 +Disabled hwndhNavBtn g" BkBtnLabel,
+			if (bbLabel)
+			{
+				Gui, % hwnd ": Add" , Button, % " x0 y0 w30 h30 +Disabled hwndhNavBtn g" bbLabel,
 
-			UxTheme_SetWindowTheme(hNavBtn, "EXPLORER", "NAVIGATION")
+				UxTheme_SetWindowTheme(hNavBtn, "EXPLORER", "NAVIGATION")
 
-			this.wProperty.NavBtn := hNavBtn
+				this.wProperty.NavBtn := hNavBtn
+			}
 		}
 
-		Gui, % hwnd ": Add" , Button, % " x" btnX " y" btnY " w68 h23 hWndhCmdBtn1 g" NxtBtnLabel, Next
-		Gui, % hwnd ": Add" , Button, % " x+7 yp wp hp hWndhCmdBtn2 g" CancelBtnLabel, Cancel
+		if (nbLabel)
+		{
+			Gui, % hwnd ": Add" , Button, % " x" btnX " y" btnY " w68 h23 hWndhCmdBtn1 g" nbLabel, Next
+			this.wProperty.CmdBtnNext := hCmdBtn1
+		}
 
-		this.wProperty.CmdBtnNext := hCmdBtn1, this.wProperty.CmdBtnCancel := hCmdBtn2
+		if (cbLabel)
+		{
+			Gui, % hwnd ": Add" , Button, % " x" btnX+75 " y" btnY " w68 h23 hWndhCmdBtn2 g" cbLabel, Cancel
+			this.wProperty.CmdBtnCancel := hCmdBtn2			
+		}
 
 		Icon := StrSplit(wIcon,","," `t" , 2), wIcon:= Icon[1], nIcon := (Icon[2] ? Icon[2] : 1)
 
-		(wIcon && wIcon != -1) ? (DllCall("user32\SendMessage", "Ptr", hWnd, "uInt", WM_SETICON, "uInt", 0, "Ptr", (hIcon := LoadPicture(wIcon, "Icon" nIcon " GDI+ h16", vType)))) 
+		(wIcon && wIcon != -1) ? (DllCall("user32\SendMessage", "Ptr", hWnd, "uInt", WM_SETICON, "uInt", 0, "Ptr"
+		, (hIcon := LoadPicture(wIcon, "Icon" nIcon " GDI+ h16", vType)))) 
 		: (wIcon = -1) ? (hIcon := -1) : (hIcon := DllCall("user32\SendMessage", "Ptr", hWnd, "uInt", WM_GETICON, "uInt", 0))
 
 		this.wProperty.Icon := hIcon
@@ -134,7 +146,7 @@ Class VisualStyle {
 		DllCall("user32\GetClientRect","Ptr", hWnd, "Ptr", &cRect)
 		pW := (NumGet(cRect, 8)-NumGet(cRect, 0)), pH := (NumGet(cRect, 12)-NumGet(cRect, 4))
 
-		Gui, % hwnd ": Add" , Tab3, % " +Right hWndhPageCtrl x0 y" (wStyle) " w" W " h" H-(wStyle+45), 1
+		Gui, % hwnd ": Add" , Tab3, % " +Right hWndhPageCtrl x0 y" (wStyle) " w" W " h" H-(wStyle+AVS_COMMNDEXT), 1
 		
 		this.wProperty.hPage := hPageCtrl
 
@@ -152,17 +164,19 @@ Class VisualStyle {
 		Gui, % this.wProperty.hwnd ": Show", % aParams, % wCaption
 
 		if this.wProperty.hPage
-			Return DllCall("ShowWindow", "Ptr", this.wProperty.hPage, "Int", SW_HIDE)
+			DllCall("ShowWindow", "Ptr", this.wProperty.hPage, "Int", SW_HIDE)
 
 		DllCall("SendMessage", "Ptr", this.wProperty.hwnd, "uInt", WM_SETREDRAW, "Int", False, "Int", 0)	
-		DllCall("ShowWindow", "Ptr", this.wProperty.hPage, "Int", SW_SHOW)
+		DllCall("ShowWindow" , "Ptr", this.wProperty.hPage, "Int", SW_SHOW)
 
 		GuiControl, Choose, % this.wProperty.hPage, 1
 		
 		DllCall("SendMessage", "Ptr", this.wProperty.hwnd, "uInt", WM_SETREDRAW, "Int", True, "Int", 0)
-		DllCall("ShowWindow", "Ptr", this.wProperty.hPage, "Int", SW_HIDE)
+		DllCall("ShowWindow" , "Ptr", this.wProperty.hPage, "Int", SW_HIDE)
 
 		WinSet, Redraw,, % "ahk_id " this.wProperty.hwnd
+
+		Return A_LastError
 	}
 	
 	PagingCreate(nPages, vPage:="PageCtrl") {
@@ -175,11 +189,13 @@ Class VisualStyle {
 			GuiControl,, % this.wProperty.hPage, % "|" SubStr(P, 1, -1)
 			GuiControl, % "+v" vPage, % this.wProperty.hPage
 		}
+		Return A_LastError
 	}
 
 	PageAdd(nPage) {
 
 		Gui, % this.wProperty.hwnd ": Tab", % nPage
+		Return A_LastError
 	}
 	
 	PageChoose(nPage) {
@@ -193,6 +209,8 @@ Class VisualStyle {
 
 		DllCall("SendMessage", "Ptr", this.wProperty.hwnd, "uInt", WM_SETREDRAW, "Int", True, "Int", 0)
 		DllCall("ShowWindow", "Ptr", this.wProperty.hPage, "Int", SW_HIDE)
+
+		Return A_LastError
 	}
 	
 	GetFontProperties(pszClassList, iPartId, iStateId:=0) {
@@ -211,8 +229,8 @@ Class VisualStyle {
 			DllCall("user32.dll\ReleaseDC", Ptr, this.wProperty.hwnd, Ptr, DC)
 
 			Return {Color: Format("{1:#x}", ((ColorRef >> 16) & 0xFF) | (ColorRef & 0x00FF00) | ((ColorRef & 0xFF) << 16))
-				  , Size: Round((-NumGet(LOGFONT, 0, "Int") * 72) / A_ScreenDPI)
-				  , Name: DllCall("kernel32.dll\MulDiv", "Int", &LOGFONT+28, "Int", 1, "Int", 1, "wStr")}
+				  ,  Size: Round((-NumGet(LOGFONT, 0, "Int") * 72) / A_ScreenDPI)
+				  ,  Name: DllCall("kernel32.dll\MulDiv", "Int", &LOGFONT+28, "Int", 1, "Int", 1, "wStr")}
 		}
 	}
 
@@ -283,6 +301,13 @@ Class VisualStyle {
 	}
 
 	CommandLink(gLabel, X:="", Y:="", W:="", H:="", wCaption:="", Note:="", Default:=0) {
+
+		if ! (W && H) 
+		{
+			hExt := this.GetTextExtent(wCaption, "BUTTON", BP_COMMANDLINK, 0, DT_LEFT)
+			nExt := this.GetTextExtent(Note, "BUTTON", BP_COMMANDLINK, 0, DT_LEFT)
+			W := ((hExt.W>nExt.W)?hExt.W:nExt.W), H := (hExt.H*2+nExt.H)
+		}
 
 		Gui, % this.wProperty.hwnd ": Add", Custom, % "ClassButton +" (Default ? BS_DEFCOMMANDLINK : BS_COMMANDLINK) " hwndhBtn g" gLabel " x" X " y" Y " w" W " h" H, % wCaption
 
@@ -411,11 +436,13 @@ Class VisualStyle {
 		
 		ObjRelease(pcLinkInfo)
 
+		clStyle := {HELPLINK: CPANEL_HELPLINK, TASKLINK: CPANEL_TASKLINK, CONTENTLINK: CPANEL_CONTENTLINK, SECTIONTITLELINK: CPANEL_SECTIONTITLELINK}
+
 		cLinkInfo := {Caption: wCaption ? wCaption : lAddress
-				  , Address: lAddress
-				  ,   Style: clStyle[(sStyle)]=7||clStyle[(sStyle)]=8||clStyle[(sStyle)]=10||clStyle[(sStyle)]=11 ? clStyle[(sStyle)] : CPANEL_HELPLINK
-				  , bgClass: bgvsClass ? bgvsClass : "CONTROLPANEL"
-				  ,  bgPart: bgiPart ? bgiPart : CPANEL_CONTENTPANE}
+				    , Address: lAddress
+				    ,   Style: clStyle[(sStyle)]=7||clStyle[(sStyle)]=8||clStyle[(sStyle)]=10||clStyle[(sStyle)]=11 ? clStyle[(sStyle)] : CPANEL_HELPLINK
+				    , bgClass: bgvsClass ? bgvsClass : "CONTROLPANEL"
+				    ,  bgPart: bgiPart ? bgiPart : CPANEL_CONTENTPANE}
 
 		ObjAddRef(pcLinkInfo := &cLinkInfo)
 		
@@ -428,9 +455,7 @@ Class VisualStyle {
 
 	GetErrorString(eMsg="") {
 
-		Static FORMAT_MESSAGE_FROM_SYSTEM := 0x1000
-			, LANG_SYSTEM_DEFAULT := 0x10000
-			, LANG_USER_DEFAULT := 0x20000
+		Static FORMAT_MESSAGE_FROM_SYSTEM := 0x1000, LANG_SYSTEM_DEFAULT := 0x10000, LANG_USER_DEFAULT := 0x20000
 
 		eMsg := "" ? eMsg := A_LastError : eMsg
 
@@ -569,9 +594,9 @@ Class VisualStyle {
 				this.DrawBackground(hdcPaint, -2
 					, this.wProperty.Style-(UxTheme_IsCompositionActive() ? 0 : 3)
 					, W+(UxTheme_IsCompositionActive() ? 0 : 2)
-					, H-this.wProperty.Style-(UxTheme_IsCompositionActive() ? 45 : 40)
+					, H-this.wProperty.Style-(UxTheme_IsCompositionActive() ? AVS_COMMNDEXT : (AVS_COMMNDEXT-5))
 					, "EDIT", (UxTheme_IsCompositionActive() ? ETS_SELECTED : EBS_NORMAL))
-				this.DrawBackground(hdcPaint,  0, (H-45), W, 45, "AEROWIZARD", AW_COMMANDAREA)
+				this.DrawBackground(hdcPaint,  0, (H-AVS_COMMNDEXT), W, AVS_COMMNDEXT, "AEROWIZARD", AW_COMMANDAREA)
 
 				DllCall("BitBlt", "Ptr", wParam, "Int", 0, "Int", 0, "Int", W, "Int", this.wProperty.Style, "Ptr", hdcPaint, "Int", 0, "Int", 0, "Int", SRCCOPY)
 					
@@ -600,8 +625,12 @@ Class VisualStyle {
 				Return 0
 			
 			WinGetPos,,, W, H, % "ahk_id " this.wProperty.hwnd
-			ControlGetPos, iX,iY,iW,iH,, % "ahk_id " this.wProperty.NavBtn
-			
+
+			if (this.wProperty.NavBtn)
+				ControlGetPos, iX,iY,iW,iH,, % "ahk_id " this.wProperty.NavBtn
+			else
+				iW := 0, iH := 30
+
 			VarSetCapacity(cRect, 16)
 			NumPut(iW, cRect, 0, "Int")
 			NumPut(W, cRect, 8, "Int")

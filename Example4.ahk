@@ -5,8 +5,10 @@
 SendMode Input
 SetBatchLines -1
 
-Wizard := new VisualStyle()
-WizProp := Wizard.WinCreate("AutoHotkey Setup", "Back", "Next", "ButtonCancel", icon, "", "", 600, 400)
+posY := ((A_ScreenHeight - 600) - 50)
+
+Wizard  := new VisualStyle()
+WizProp := Wizard.WinCreate("AutoHotkey Setup", "Back", "Next", "ButtonCancel", icon, 50, posY, 600, 400)
 hwnd1   := WizProp.hwnd
 hPrev   := WizProp.NavBtn
 hNext   := WizProp.CmdBtnNext
@@ -18,9 +20,9 @@ type := DefaultType="ANSI" ? "ANSI 32-bit" : "Unicode " (DefaultType="x64"?"64":
 
 	HeaderFont	:= Wizard.GetFontProperties("AEROWIZARD", AW_HEADERAREA)
 	ContentFont	:= Wizard.GetFontProperties("AEROWIZARD", AW_CONTENTAREA)
-	LinkFont		:= Wizard.GetFontProperties("TEXTSTYLE", TEXT_HYPERLINKTEXT, TS_HYPERLINK_DISABLED)
-	cbxpFont		:= Wizard.GetFontProperties("CONTROLPANEL", CPANEL_SECTIONTITLELINK, CPSTL_NORMAL)
-	cbxsFont		:= Wizard.GetFontProperties("CONTROLPANEL", CPANEL_TASKLINK, CPTL_NORMAL)
+	LinkFont	:= Wizard.GetFontProperties("TEXTSTYLE", TEXT_HYPERLINKTEXT, TS_HYPERLINK_DISABLED)
+	cbxpFont	:= Wizard.GetFontProperties("CONTROLPANEL", CPANEL_SECTIONTITLELINK, CPSTL_NORMAL)
+	cbxsFont	:= Wizard.GetFontProperties("CONTROLPANEL", CPANEL_TASKLINK, CPTL_NORMAL)
 
 Wizard.PagingCreate(6)
 
@@ -86,7 +88,7 @@ Gui %hwnd1%: Add, Text, x40 y50, Select additional options for AutoHotkey instal
 Gui %hWnd1%: Font,,
 
 Gui %hWnd1%: Font, % "s" cbxpFont.Size, % cbxpFont.Name
-Gui %hwnd1%: Add, Checkbox, Checked xp y+15 gDummy, Install script compiler
+Gui %hwnd1%: Add, Checkbox, Checked xp y+15, Install script compiler
 
 Gui %hWnd1%: Font, % "s" cbxsFont.Size " c" cbxsFont.Color,
 Ext := Wizard.GetTextExtent("Install script compiler", "CONTROLPANEL", 11, 0, "")
@@ -107,7 +109,7 @@ Gui %hWnd1%: Font, % "s" cbxpFont.Size, % cbxpFont.Name
 Gui %hwnd1%: Add, Checkbox, Checked x40 y+15, Separate taskbar buttons
 
 Gui %hWnd1%: Font, % "s" cbxsFont.Size " c" cbxsFont.Color,
-Ext := Wizard.GetTextExtent("Enable drag `& drop", "CONTROLPANEL", 11, 0, "")
+Ext := Wizard.GetTextExtent("Enable drag `& drop", "CONTROLPANEL", CPANEL_SECTIONTITLELINK, "", "")
 Gui %hwnd1%: Add, Link, % "xp+18 yp+" Ext.H " gMyFunction"
 , Causes each script which has visible windows to be treated as a separate program, but`nprevents AutoHotkey.exe from being pinned to the taskbar. <a id="/docs/Program.htm#Installer_IsHostApp">[help]</a>
 
@@ -157,47 +159,6 @@ Gui %hwnd1%: Add, Text, x+1 yp+1, ?
 Wizard.WinShow()
 Return
 
-Dummy:
-WindowBasic := new VisualStyle()
-
-icon := "C:\Windows\explorer.exe , 24"
-
-WinProp  := WindowBasic.WinCreate("Another Test Window", "Dummy2", "Dummy2", "Dummy2", icon, "", "", 400, 300, "Win")
-hwnd2    := WinProp.hwnd
-hPrev2   := WinProp.NavBtn
-hNext2   := WinProp.CmdBtnNext
-hCancel2 := WinProp.CmdBtnCancel
-
-Txt = 
-(
-Lorem ipsum dolor sit amet, consectetur adipiscing elit,
-sed do eiusmod tempor incididunt ut labore et dolore
-magna aliqua. Ut enim ad minim veniam, quis nostrud
-exercitation ullamco laboris nisi ut aliquip ex ea commodo
-consequat. Duis aute irure dolor in reprehenderit in
-voluptate velit esse cillum dolore eu fugiat nulla pariatur.
-Excepteur sint occaecat cupidatat non proident,
-sunt in culpa qui officia deserunt mollit anim id est laborum.
-)
-
-Gui %hWnd2%: Font, % "s" HeaderFont.Size " c" HeaderFont.Color,
-Gui %hwnd2%: Add, Text, x40 y10, % "Install " CurrentName " v" CurrentVersion " to your computer"
-
-Gui %hWnd2%: Font, % "s" ContentFont.Size " c" ContentFont.Color,
-Gui %hwnd2%: Add, Text, xp y+15 w350, % Txt
-
-GuiControl, Hide, %hNext2%
-GuiControl,, %hCancel2%, Close
-
-WindowBasic.WinShow()
-Return 
-
-Dummy2:
-Gui %hwnd2%: Cancel
-Return
-
-
-
 ButtonCancel:
 GuiClose:
 	if (A_GuiEvent = "Normal") and (A_EventInfo = 0x0000)
@@ -213,8 +174,7 @@ Back:
 	GuiControl, Disable%nBtnSt%, %hNext%
 	GuiControl, Disable%pBtnSt%, %hPrev%
 	GuiControl,, %hNext%, Next
-	Wizard.PageChoose(PageCtrl - 1)
-		
+	Wizard.PageChoose(PageCtrl - 1)		
 Return 	
 
 Next:
@@ -223,6 +183,7 @@ Next:
 		GoSub, UnInstall
 		Return
 	}
+
 	if (lastButton = "Express Installation")
 	{
 		Ext := Wizard.GetTextExtent("Installing " CurrentName " v" CurrentVersion " (" type ")", "AEROWIZARD", AW_HEADERAREA, 0, "")
@@ -231,6 +192,7 @@ Next:
 		GoSub, UnInstall
 		Return 
 	}
+
 	if (lastButton = "Reinstall (dowload required)")
 	{
 		Ext := Wizard.GetTextExtent("Downloading Updates...", "AEROWIZARD", AW_HEADERAREA, 0, "")
@@ -251,12 +213,14 @@ Next:
 		GuiControl, Disable%pBtnSt%, %hPrev%
 		Wizard.PageChoose(PageCtrl + 1)
 	}
+
 	if ((PageCtrl + 1) = 4)
 	{
 		GuiControl,, %hNext%, Install	
 		GuiControl, Disable%pBtnSt%, %hPrev%
 		Wizard.PageChoose(PageCtrl + 1)
 	}
+	
 	if ((PageCtrl + 1) = 5)
 	{
 		lastButton := "Express Installation"
@@ -359,6 +323,9 @@ MyFunction(CtrlHwnd, GuiEvent, LinkIndex, HrefOrID)
 	ViewHelp(HrefOrID)
 }
 
+; **************************************************************************************************************************************************;
+; The folowing functions courtesy of AutoHotkey installer.  Thanks Lexicos!
+; ==================================================================================================================================================;
 DetermineVersion() {
 	global
 	local url, v
