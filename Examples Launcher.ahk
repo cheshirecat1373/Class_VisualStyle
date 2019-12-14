@@ -52,5 +52,3 @@ Return
 BtnClose:
 GuiClose:
 ExitApp
-
-; This is a test ;
